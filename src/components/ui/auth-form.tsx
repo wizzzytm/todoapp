@@ -43,6 +43,18 @@ export function LoginPreview() {
     },
   });
 
+  async function onSubmit(values: z.infer<typeof formSchemaLogin>) {
+    try {
+      toast(
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
+        </pre>
+      );
+    } catch (error) {
+      console.error("Form submission error", error);
+      toast.error("Failed to submit the form. Please try again.");
+    }
+  }
   return (
     <div className="flex flex-col min-h-[50vh] h-full w-full items-center justify-center px-4">
       <Card className="mx-auto max-w-sm">
@@ -54,7 +66,7 @@ export function LoginPreview() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="grid gap-4">
                 <FormField
                   control={form.control}
@@ -160,6 +172,21 @@ export function RegisterPreview() {
     },
   });
 
+  async function onSubmit(values: z.infer<typeof formSchemaRegister>) {
+    try {
+      // Assuming an async login function
+      console.log(values);
+      toast(
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
+        </pre>
+      );
+    } catch (error) {
+      console.error("Form submission error", error);
+      toast.error("Failed to submit the form. Please try again.");
+    }
+  }
+
   return (
     <div className="flex min-h-[60vh] h-full w-full items-center justify-center px-4">
       <Card className="mx-auto max-w-sm">
@@ -171,7 +198,7 @@ export function RegisterPreview() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="grid gap-4">
                 {/* Name Field */}
                 <FormField

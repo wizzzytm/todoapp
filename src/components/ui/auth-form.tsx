@@ -4,8 +4,8 @@ import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { login, signup } from "@/app/libs/actions";
+import { useRouter } from "next/navigation";
 
 import {
   Form,
@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useToast } from "@/hooks/use-toast";
+import { error } from "console";
 
 // Improved schema with additional validation rules
 const formSchemaLogin = z.object({
@@ -35,6 +37,8 @@ const formSchemaLogin = z.object({
 });
 
 export function LoginPreview() {
+  const router = useRouter();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchemaLogin>>({
     resolver: zodResolver(formSchemaLogin),
     defaultValues: {
@@ -45,14 +49,33 @@ export function LoginPreview() {
 
   async function onSubmit(values: z.infer<typeof formSchemaLogin>) {
     try {
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
+      const formData = new FormData();
+      formData.append("email", values.email);
+      formData.append("password", values.password);
+
+      const res = await login(formData);
+      if (res?.error) {
+        toast({
+          variant: "destructive",
+          title: "Login failed",
+          description: res.error,
+          duration: 5000,
+        });
+      } else if (res?.success) {
+        toast({
+          title: "Welcome Back!",
+          description: "You have successfully logged in.",
+          duration: 5000,
+        });
+        router.push("/");
+      }
     } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: "Please try again later.",
+        duration: 5000,
+      });
     }
   }
   return (
@@ -113,7 +136,7 @@ export function LoginPreview() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" formAction={login} className="w-full">
+                <Button type="submit" className="w-full">
                   Login
                 </Button>
               </div>
@@ -121,7 +144,7 @@ export function LoginPreview() {
           </Form>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="underline">
+            <Link href="/auth/register" className="underline">
               Sign up
             </Link>
           </div>
@@ -162,6 +185,8 @@ const formSchemaRegister = z
   });
 
 export function RegisterPreview() {
+  const router = useRouter();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchemaRegister>>({
     resolver: zodResolver(formSchemaRegister),
     defaultValues: {
@@ -174,16 +199,31 @@ export function RegisterPreview() {
 
   async function onSubmit(values: z.infer<typeof formSchemaRegister>) {
     try {
-      // Assuming an async login function
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("email", values.email);
+      formData.append("password", values.password);
+
+      const res = await signup(formData);
+
+      if (res?.error) {
+        toast({
+          variant: "destructive",
+          title: "Signup Failed",
+          description: res.error,
+          duration: 5000,
+        });
+      } else if (res?.success) {
+        router.push("/auth/check-email");
+      }
     } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
+      console.error("Signup error:", error);
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: "Please try again later.",
+        duration: 5000,
+      });
     }
   }
 
@@ -278,7 +318,7 @@ export function RegisterPreview() {
                   )}
                 />
 
-                <Button type="submit" formAction={signup} className="w-full">
+                <Button type="submit" className="w-full">
                   Register
                 </Button>
               </div>
@@ -286,7 +326,7 @@ export function RegisterPreview() {
           </Form>
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
-            <Link href="/login" className="underline">
+            <Link href="/auth/login" className="underline">
               Login
             </Link>
           </div>

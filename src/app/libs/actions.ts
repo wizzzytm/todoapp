@@ -1,9 +1,7 @@
 "use server";
 
-import { Database } from "../types/supabase";
 import { createClient } from "@/app/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
@@ -16,33 +14,27 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    return;
+    return { error: error.message };
   }
-
   revalidatePath("/", "layout");
-  redirect("/");
+  return { success: true };
 }
 
 export async function signup(formData: FormData) {
   const supabase = await createClient();
   const fullName = formData.get("name") as string;
-
   const [first_name, ...lastNameParts] = fullName.split(" ");
   const last_name = lastNameParts.length > 0 ? lastNameParts.join(" ") : null;
-
   const data = {
     first_name: first_name,
     last_name: last_name,
     email: formData.get("email") as string,
     password: formData.get("password") as string,
   };
-
   const { error } = await supabase.auth.signUp(data);
-
   if (error) {
-    return;
+    return { error: error.message };
   }
-
   revalidatePath("/", "layout");
-  redirect("/");
+  return { success: true };
 }

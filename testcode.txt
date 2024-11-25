@@ -2,51 +2,52 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
-
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
+        getAll: () => request.cookies.getAll(),
+        setAll: (cookiesToSet) => {
           cookiesToSet.forEach(({ name, value, options }) =>
             request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
           );
         },
       },
     }
   );
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
 
+  // Allow requests to `/auth/signout` to proceed
+  if (request.nextUrl.pathname === "/auth/signout") {
+    return NextResponse.next();
+  }
+
+  // Redirect authenticated users away from auth pages
   if (user && isAuthPage) {
-    console.log("n1");
+    console.log(
+      "Authenticated user accessing an auth page. Redirecting to home..."
+    );
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
   }
 
+  // Redirect unauthenticated users away from protected routes
   if (!user && !isAuthPage) {
-    console.log("n2");
+    console.log(
+      "Unauthenticated user trying to access protected route. Redirecting to login..."
+    );
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
 
-  return supabaseResponse;
+  console.log("User is authorized. Proceeding...");
+  return NextResponse.next();
 }

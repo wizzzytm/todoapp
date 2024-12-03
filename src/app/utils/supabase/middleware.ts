@@ -32,7 +32,12 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  console.log("Authenticated user ID:", user?.id);
   const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
+
+  if (request.nextUrl.pathname === "/auth/signout") {
+    return NextResponse.next();
+  }
 
   if (user && isAuthPage) {
     console.log("n1");

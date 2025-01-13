@@ -32,22 +32,40 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log("Authenticated user ID:", user?.id);
-  const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
+  const isAuthPage =
+    request.nextUrl.pathname.startsWith("/auth") &&
+    !request.nextUrl.pathname.startsWith("/auth/reset");
 
   if (request.nextUrl.pathname === "/auth/signout") {
     return NextResponse.next();
   }
 
+  // if (request.nextUrl.pathname === "/auth/reset") {
+  //   const token_hash = request.nextUrl.searchParams.get("token_hash");
+  //   if (!token_hash) {
+  //     const url = request.nextUrl.clone();
+  //     url.pathname = "/404";
+  //     return NextResponse.redirect(url);
+  //   }
+  //   const { data, error } = await supabase.auth.verifyOtp({
+  //     type: "recovery",
+  //     token_hash,
+  //   });
+  //   if (error || !data) {
+  //     console.error("Invalid token in middleware:", error?.message);
+  //     const url = request.nextUrl.clone();
+  //     url.pathname = "/404";
+  //     return NextResponse.redirect(url);
+  //   }
+  // }
+
   if (user && isAuthPage) {
-    console.log("n1");
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
   }
 
   if (!user && !isAuthPage) {
-    console.log("n2");
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);

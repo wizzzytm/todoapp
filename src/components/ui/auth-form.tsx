@@ -4,7 +4,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { login, signup } from "@/app/libs/actions";
+import { forgot, login, reset, signup } from "@/app/libs/actions";
 import { useRouter } from "next/navigation";
 
 import {
@@ -118,7 +118,7 @@ export function LoginPreview() {
                       <div className="flex justify-between items-center">
                         <FormLabel htmlFor="password">Password</FormLabel>
                         <Link
-                          href="#"
+                          href="/auth/forgot"
                           className="ml-auto inline-block text-sm underline"
                         >
                           Forgot your password?
@@ -330,6 +330,230 @@ export function RegisterPreview() {
               Login
             </Link>
           </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+const formSchemaForgot = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+});
+
+export function ForgetPasswordPreview() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof formSchemaForgot>>({
+    resolver: zodResolver(formSchemaForgot),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchemaForgot>) {
+    try {
+      const formData = new FormData();
+      formData.append("email", values.email);
+      const res = await forgot(formData);
+
+      if (res?.error) {
+        toast({
+          variant: "destructive",
+          title: "Something went wrong!",
+          description: res.error,
+          duration: 5000,
+        });
+      } else if (res?.success) {
+        router.push("/auth/login");
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: "Please try again later.",
+        duration: 5000,
+      });
+    }
+  }
+
+  return (
+    <div className="flex min-h-[40vh] h-full w-full items-center justify-center px-4">
+      <Card className="mx-auto max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl">Forgot Password</CardTitle>
+          <CardDescription>
+            Enter your email address to receive a password reset link.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <div className="grid gap-4">
+                {/* Email Field */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-2">
+                      <FormLabel htmlFor="email">Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          id="email"
+                          placeholder="johndoe@mail.com"
+                          type="email"
+                          autoComplete="email"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full">
+                  Send Reset Link
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+const formSchemaReset = z
+  .object({
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters long" })
+      .regex(/[A-Z]/, {
+        message: "Password must contain at least one uppercase letter",
+      })
+      .regex(/[a-z]/, {
+        message: "Password must contain at least one lowercase letter",
+      })
+      .regex(/[0-9]/, { message: "Password must contain at least one number" })
+      .regex(/[!@#$%^&_*]/, {
+        message:
+          "Password must contain at least one special character from !, @, #, $, %, ^, &, _, *",
+      })
+      .regex(/^[A-Za-z0-9!@#$%^&_*]+$/, {
+        message: "Password contains invalid characters",
+      }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match",
+  });
+
+export function ResetPasswordPreview() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof formSchemaReset>>({
+    resolver: zodResolver(formSchemaReset),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchemaReset>) {
+    try {
+      const formData = new FormData();
+      formData.append("password", values.password);
+      const res = await reset(formData);
+
+      if (res?.error) {
+        toast({
+          variant: "destructive",
+          title: "Something went wrong!",
+          description: res.error,
+          duration: 5000,
+        });
+      } else if (res?.success) {
+        const signout = await fetch("/libs/signout", { method: "POST" });
+        if (!signout.ok) {
+          throw new Error("Failed to log out!");
+        }
+        router.push("/auth/login");
+        toast({
+          title: "Your password has been successfuly changed!",
+          description: "Log in with your new password.",
+          duration: 5000,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: "Please try again later.",
+        duration: 5000,
+      });
+    }
+  }
+
+  return (
+    <div className="flex min-h-[50vh] h-full w-full items-center justify-center px-4">
+      <Card className="mx-auto max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl">Reset Password</CardTitle>
+          <CardDescription>
+            Enter your new password to reset your password.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <div className="grid gap-4">
+                {/* New Password Field */}
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-2">
+                      <FormLabel htmlFor="password">New Password</FormLabel>
+                      <FormControl>
+                        <PasswordInput
+                          id="password"
+                          placeholder="******"
+                          autoComplete="new-password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Confirm Password Field */}
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-2">
+                      <FormLabel htmlFor="confirmPassword">
+                        Confirm Password
+                      </FormLabel>
+                      <FormControl>
+                        <PasswordInput
+                          id="confirmPassword"
+                          placeholder="******"
+                          autoComplete="new-password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="submit" className="w-full">
+                  Reset Password
+                </Button>
+              </div>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>

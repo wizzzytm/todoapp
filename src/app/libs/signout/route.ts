@@ -4,14 +4,11 @@ import { type NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
-  console.log("Signing out...");
-
   const supabase = await createClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  console.log("User before sign out:", user);
 
   if (user) {
     const { error } = await supabase.auth.signOut();

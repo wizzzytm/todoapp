@@ -38,3 +38,31 @@ export async function signup(formData: FormData) {
   revalidatePath("/", "layout");
   return { success: true };
 }
+
+export async function forgot(formData: FormData) {
+  const supabase = await createClient();
+  const email = formData.get("email") as string;
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: "http://localhost:3000/auth/reset",
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+  return { success: true };
+}
+
+export async function reset(formData: FormData) {
+  const supabase = await createClient();
+  const newPassword = formData.get("password") as string;
+
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+  return { success: true };
+}

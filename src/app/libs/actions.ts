@@ -35,6 +35,10 @@ export async function signup(formData: FormData) {
   if (error) {
     return { error: error.message };
   }
+  await supabase
+    .from("profiles")
+    .insert({ first_name: first_name, last_name: last_name });
+
   revalidatePath("/", "layout");
   return { success: true };
 }

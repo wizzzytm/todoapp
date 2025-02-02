@@ -4,6 +4,12 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/ui/modetoggle";
 import { Toaster } from "@/components/ui/toaster";
+import type { Viewport } from "next";
+
+export const viewport: Viewport = {
+  initialScale: 1,
+  width: "device-width",
+};
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

@@ -1,6 +1,8 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
 import Task, { TodoProps } from "./Task";
+import Link from "next/link";
+import { CirclePlus } from "lucide-react";
 
 export default function TaskContainer({
   initialTodos,
@@ -16,8 +18,12 @@ export default function TaskContainer({
       )
     );
   };
-  const handleDelete = (id: string) => {
-    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+  const handleAddDelete = (id: string, todo?: TodoProps) => {
+    if (todo) {
+      setTodos((prevTodos) => [todo, ...prevTodos]);
+    } else {
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+    }
   };
 
   const handleEdit = (id: string, updatedTodo: TodoProps) => {
@@ -41,12 +47,17 @@ export default function TaskContainer({
         {todos.map((todo) => (
           <Task
             onComplete={handleComplete}
-            onDelete={handleDelete}
+            onAddDelete={handleAddDelete}
             onEdit={handleEdit}
             key={todo.id}
             todo={todo}
           />
         ))}
+        <div className="fixed bottom-4 right-4">
+          <Link href="/add">
+            <CirclePlus className="md:size-12  size-9" />
+          </Link>
+        </div>
       </section>
     </>
   );

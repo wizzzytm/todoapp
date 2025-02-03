@@ -23,6 +23,8 @@ import {
   AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
 import { TodoProps } from "@/components/tasks/Task";
@@ -33,9 +35,10 @@ import {
   Trash2,
   ExternalLink,
   CalendarIcon,
+  Save,
 } from "lucide-react";
 import { useState } from "react";
-import { deleteTodo, updateTodo } from "@/app/libs/data";
+import { addTodo, deleteTodo, updateTodo } from "@/app/libs/data";
 import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,7 +51,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { parseDate } from "@/app/utils/formatTodo";
+import { formatTodo, parseDate } from "@/app/utils/formatTodo";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
@@ -57,11 +60,18 @@ import { format, getYear } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+import clsx from "clsx";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const formSchema = z.object({
-  title: z.string().max(40, {
-    message: "Title should be less than or equal to 40 characters",
-  }),
+  title: z
+    .string()
+    .trim()
+    .max(40, {
+      message: "Title should be less than or equal to 40 characters",
+    })
+    .min(1, { message: "Title can't be empty" }),
   description: z
     .string()
     .max(300, {
@@ -73,11 +83,11 @@ const formSchema = z.object({
 
 export default function TaskOptions({
   todo,
-  onDelete,
+  onAddDelete,
   onEdit,
 }: {
   todo: TodoProps;
-  onDelete: (id: string, todo?: TodoProps) => void;
+  onAddDelete: (id: string, todo?: TodoProps) => void;
   onEdit: (id: string, updatedTodo: TodoProps) => void;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -94,7 +104,7 @@ export default function TaskOptions({
 
   const handleDelete = async () => {
     try {
-      onDelete(todo.id);
+      onAddDelete(todo.id);
 
       const res = await deleteTodo(todo.id);
       if (res?.error) {
@@ -103,7 +113,7 @@ export default function TaskOptions({
 
       toast({
         title: "Task deleted successfully",
-        duration: 5000,
+        duration: 3000,
       });
 
       setIsAlertDialogOpen(false);
@@ -114,7 +124,7 @@ export default function TaskOptions({
         variant: "destructive",
         title: "Error deleting task",
         description: error instanceof Error ? error.message : "Unknown error",
-        duration: 5000,
+        duration: 3000,
       });
     }
   };
@@ -136,7 +146,7 @@ export default function TaskOptions({
 
       toast({
         title: "Task updated successfully",
-        duration: 5000,
+        duration: 3000,
       });
 
       setIsEditDialogOpen(false);
@@ -145,14 +155,51 @@ export default function TaskOptions({
         variant: "destructive",
         title: "Something went wrong",
         description: error instanceof Error ? error.message : "Unknown error",
-        duration: 5000,
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleDuplicate = async () => {
+    try {
+      const todoCopy = new FormData();
+      todoCopy.append("title", todo.title + " (copy)");
+      todoCopy.append("description", todo.description ? todo.description : "");
+      todoCopy.append(
+        "deadline",
+        todo.deadline ? format(todo.deadline, "yyyy-MM-dd") : ""
+      );
+      console.log(todo);
+
+      const res = await addTodo(todoCopy);
+      if (res?.error) {
+        toast({
+          variant: "destructive",
+          title: "Could not duplicate todo",
+          description: res.error,
+          duration: 3000,
+        });
+      } else if (res?.success) {
+        onAddDelete(todo.id, formatTodo(res.data[0]));
+
+        toast({
+          title: "Successfully duplicated todo",
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: error instanceof Error ? error.message : "Unknown error",
+        duration: 3000,
       });
     }
   };
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Ellipsis className="mr-1 cursor-pointer" />
         </DropdownMenuTrigger>
@@ -163,14 +210,14 @@ export default function TaskOptions({
               <Pencil size={18} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={handleDuplicate}>
             Duplicate
             <DropdownMenuShortcut>
               <Copy size={18} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            See details
+            <Link href={`/todo/${todo.id}`}>See details</Link>
             <DropdownMenuShortcut>
               <ExternalLink size={18} />
             </DropdownMenuShortcut>
@@ -178,7 +225,9 @@ export default function TaskOptions({
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-red-700 font-bold"
-            onClick={() => setIsAlertDialogOpen(true)}
+            onClick={() => {
+              setIsAlertDialogOpen(true);
+            }}
           >
             Delete task
             <DropdownMenuShortcut>
@@ -232,9 +281,22 @@ export default function TaskOptions({
                           id="description"
                           placeholder="Todo description"
                           value={field.value || ""}
-                          className="resize-none"
+                          className="resize-none min-h-[100px]"
+                          onChange={(e) => {
+                            const trimmedValue = e.target.value.trimStart();
+                            if (trimmedValue.trim().length <= 300) {
+                              field.onChange(e.target.value);
+                            }
+                          }}
                         />
                       </FormControl>
+                      <p
+                        className={clsx("text-xs text-muted-foreground", {
+                          "text-red-500": field.value?.trim().length === 300,
+                        })}
+                      >
+                        {field.value?.trim().length || 0}/300
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -311,15 +373,26 @@ export default function TaskOptions({
                 />
               </div>
               <DialogFooter>
-                <div className="flex justify-center w-full flex-row gap-2">
-                  <Button
-                    onClick={() => setIsEditDialogOpen(false)}
-                    className="btn-secondary"
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" className="btn-primary">
-                    Save
+                <div className="flex flex-col items-center w-full gap-3">
+                  <div className="flex justify-center w-full gap-3">
+                    <Button onClick={() => form.reset()} type="reset">
+                      Reset
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() =>
+                        form.reset({
+                          title: "",
+                          description: "",
+                          deadline: null,
+                        })
+                      }
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                  <Button type="submit" className="btn-primary w-fit">
+                    Save <Save className="md:size-6" />
                   </Button>
                 </div>
               </DialogFooter>
@@ -337,15 +410,8 @@ export default function TaskOptions({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <button
-              onClick={() => setIsAlertDialogOpen(false)}
-              className="btn-secondary"
-            >
-              Cancel
-            </button>
-            <button onClick={handleDelete} className="btn-danger">
-              Delete
-            </button>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

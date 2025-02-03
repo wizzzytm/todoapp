@@ -26,7 +26,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useToast } from "@/hooks/use-toast";
-import { error } from "console";
 
 // Improved schema with additional validation rules
 const formSchemaLogin = z.object({
@@ -59,13 +58,13 @@ export function LoginPreview() {
           variant: "destructive",
           title: "Login failed",
           description: res.error,
-          duration: 5000,
+          duration: 3000,
         });
       } else if (res?.success) {
         toast({
           title: "Welcome Back!",
           description: "You have successfully logged in.",
-          duration: 5000,
+          duration: 3000,
         });
         router.push("/");
       }
@@ -74,7 +73,7 @@ export function LoginPreview() {
         variant: "destructive",
         title: "Something went wrong",
         description: "Please try again later.",
-        duration: 5000,
+        duration: 3000,
       });
     }
   }
@@ -158,6 +157,7 @@ const formSchemaRegister = z
   .object({
     name: z
       .string()
+      .trim()
       .min(2, { message: "Name must be at least 2 characters long" }),
     email: z.string().email({ message: "Invalid email address" }),
     password: z
@@ -211,7 +211,7 @@ export function RegisterPreview() {
           variant: "destructive",
           title: "Signup Failed",
           description: res.error,
-          duration: 5000,
+          duration: 3000,
         });
       } else if (res?.success) {
         router.push("/auth/check-email");
@@ -222,7 +222,7 @@ export function RegisterPreview() {
         variant: "destructive",
         title: "Something went wrong",
         description: "Please try again later.",
-        duration: 5000,
+        duration: 3000,
       });
     }
   }
@@ -361,7 +361,7 @@ export function ForgetPasswordPreview() {
           variant: "destructive",
           title: "Something went wrong!",
           description: res.error,
-          duration: 5000,
+          duration: 3000,
         });
       } else if (res?.success) {
         router.push("/auth/login");
@@ -371,7 +371,7 @@ export function ForgetPasswordPreview() {
         variant: "destructive",
         title: "Something went wrong",
         description: "Please try again later.",
-        duration: 5000,
+        duration: 3000,
       });
     }
   }
@@ -469,7 +469,7 @@ export function ResetPasswordPreview() {
           variant: "destructive",
           title: "Something went wrong!",
           description: res.error,
-          duration: 5000,
+          duration: 3000,
         });
       } else if (res?.success) {
         const signout = await fetch("/libs/signout", { method: "POST" });
@@ -480,7 +480,7 @@ export function ResetPasswordPreview() {
         toast({
           title: "Your password has been successfuly changed!",
           description: "Log in with your new password.",
-          duration: 5000,
+          duration: 3000,
         });
       }
     } catch (error) {
@@ -488,7 +488,7 @@ export function ResetPasswordPreview() {
         variant: "destructive",
         title: "Something went wrong",
         description: "Please try again later.",
-        duration: 5000,
+        duration: 3000,
       });
     }
   }

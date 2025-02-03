@@ -34,23 +34,23 @@ export interface TodoProps {
 
 export default function Task({
   todo,
-  onDelete,
+  onAddDelete,
   onComplete,
   onEdit,
 }: {
   todo: TodoProps;
-  onDelete: (id: string) => void;
+  onAddDelete: (id: string, copyTodo?: TodoProps) => void;
   onComplete: (id: string) => void;
   onEdit: (id: string, updatedTodo: TodoProps) => void;
 }) {
   const renderDeadline = () => {
     const date = new Date();
     date.setHours(1, 0, 0, 0);
-    const isOverdue = new Date(parseDate(todo.deadline)) < date;
 
     if (todo.deadline === "") {
       return <span className="text-sm md:text-base">No deadline</span>;
     } else {
+      const isOverdue = new Date(parseDate(todo.deadline)) < date;
       if (todo.completed == false) {
         if (isOverdue) {
           return (
@@ -77,7 +77,9 @@ export default function Task({
             <span className="italic text-sm text-gray-300 flex flex-col">
               {todo.deadline}
               {isOverdue ? (
-                <span className="text-xs">Not completed on time</span>
+                <span className="text-xs no-underline">
+                  Not completed on time
+                </span>
               ) : (
                 ""
               )}
@@ -125,10 +127,14 @@ export default function Task({
             className="size-7"
           />
         </div>
-        <div className="md:w-9/12 md:p-4 p-2 md:pl-6">
+        <div className="md:w-9/12 md:p-4 p-2 md:pl-6 ">
           <div className="flex justify-between">
             <CardTitle className="text-base md:text-xl">{todo.title}</CardTitle>
-            <TaskOptions todo={todo} onDelete={onDelete} onEdit={onEdit} />
+            <TaskOptions
+              todo={todo}
+              onAddDelete={onAddDelete}
+              onEdit={onEdit}
+            />
           </div>
           <Separator className="md:mt-2 mt-1 " />
           <span className="italic text-[0.65rem] text-muted-foreground">
@@ -136,8 +142,8 @@ export default function Task({
           </span>
           <CardDescription>{todo.description}</CardDescription>
         </div>
-        <div className="md:w-2/12 flex bg-muted justify-center  ">
-          <div className="w-auto p-2 bg-muted text-center md:flex-col flex justify-center gap-1 items-center">
+        <div className="md:w-2/12 flex bg-muted justify-center">
+          <div className="w-auto p-2 bg-muted text-center md:flex-col flex justify-center gap-1 items-center ">
             {renderDeadline()}
           </div>
 

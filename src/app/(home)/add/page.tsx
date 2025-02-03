@@ -25,17 +25,24 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, CirclePlus, HomeIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { addTodo } from "@/app/libs/data";
+import Link from "next/link";
+import clsx from "clsx";
 
 const formSchema = z.object({
-  title: z.string().max(40, {
-    message: "Title should be less than or equal to 40 characters",
-  }),
+  title: z
+    .string()
+    .trim()
+    .max(40, {
+      message: "Title should be less than or equal to 40 characters",
+    })
+    .min(1, { message: "Title can't be empty" }),
   description: z
     .string()
+    .trim()
     .max(300, {
       message: "Description should be less than or equal to 300 characters",
     })
@@ -72,12 +79,12 @@ export default function Page() {
           variant: "destructive",
           title: "Could not add todo",
           description: res.error,
-          duration: 5000,
+          duration: 3000,
         });
       } else if (res?.success) {
         toast({
           title: "Successfully added todo",
-          duration: 5000,
+          duration: 3000,
         });
         router.push("/");
       }
@@ -86,7 +93,7 @@ export default function Page() {
         variant: "destructive",
         title: "Something went wrong",
         description: error instanceof Error ? error.message : "Unknown error",
-        duration: 5000,
+        duration: 3000,
       });
     }
   }
@@ -104,7 +111,7 @@ export default function Page() {
                   name="title"
                   render={({ field }) => (
                     <FormItem className="grid gap-2">
-                      <FormLabel htmlFor="title">Title</FormLabel>
+                      <FormLabel htmlFor="title">Title*</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -129,9 +136,22 @@ export default function Page() {
                           id="description"
                           placeholder="Todo description"
                           value={field.value || ""}
-                          className="resize-none"
+                          className="resize-none min-h-[100px]"
+                          onChange={(e) => {
+                            const trimmedValue = e.target.value.trimStart();
+                            if (trimmedValue.trim().length <= 300) {
+                              field.onChange(e.target.value);
+                            }
+                          }}
                         />
                       </FormControl>
+                      <p
+                        className={clsx("text-xs text-muted-foreground", {
+                          "text-red-500": field.value?.trim().length === 300,
+                        })}
+                      >
+                        {field.value?.trim().length || 0}/300
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -209,7 +229,7 @@ export default function Page() {
               </div>
               <div className="flex justify-center w-full flex-row gap-2">
                 <Button type="reset" onClick={() => form.reset()}>
-                  Reset
+                  Clear
                 </Button>
                 <Button type="submit" className="">
                   Add todo
@@ -219,6 +239,11 @@ export default function Page() {
           </Form>
         </Card>
       </section>
+      <div className="fixed bottom-4 right-4">
+        <Link href="/">
+          <HomeIcon className="md:size-12  size-8" />
+        </Link>
+      </div>
     </div>
   );
 }

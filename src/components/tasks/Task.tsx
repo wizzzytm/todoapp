@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
 import { Checkbox } from "../ui/checkbox";
 import TaskOptions from "./TaskOptions";
-import { parseDate } from "@/app/utils/formatTodo";
+import { parseDate } from "@/app/utils/util";
 import clsx from "clsx";
 import { updateTodo } from "@/app/libs/data";
 import { toast } from "@/hooks/use-toast";
@@ -74,7 +74,7 @@ export default function Task({
         return (
           <>
             <AlarmClock className="text-gray-500 md:size-6 size-5" />
-            <span className="italic text-sm text-gray-300 flex flex-col">
+            <span className="italic text-sm text-gray-500 flex flex-col">
               {todo.deadline}
               {isOverdue ? (
                 <span className="text-xs no-underline">

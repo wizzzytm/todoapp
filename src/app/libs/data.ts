@@ -2,6 +2,7 @@
 import { createClient } from "@/app/utils/supabase/server";
 import { TodoProps } from "@/components/tasks/Task";
 import { revalidatePath } from "next/cache";
+import { getBaseTitle } from "../utils/util";
 
 export async function getTodos() {
   const supabase = await createClient();
@@ -112,3 +113,21 @@ export async function addTodo(formData: FormData) {
     console.log(error);
   }
 }
+
+export const getNumberCopy = async (title: string) => {
+  try {
+    const supabase = await createClient();
+    const baseTitle = getBaseTitle(title);
+    const { error, count } = await supabase
+      .from("todos")
+      .select("title", { count: "exact" })
+      .ilike("title", `${baseTitle}%`);
+    if (error) {
+      throw new Error("Error fetching todos: " + error.message);
+    }
+    return count ? count + 1 : 1;
+  } catch (error) {
+    console.error(error);
+    return 1;
+  }
+};

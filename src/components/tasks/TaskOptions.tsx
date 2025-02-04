@@ -26,7 +26,6 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-
 import { TodoProps } from "@/components/tasks/Task";
 import {
   Ellipsis,
@@ -51,18 +50,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { formatTodo, parseDate } from "@/app/utils/formatTodo";
+import { formatTodo, getBaseTitle, parseDate } from "@/app/utils/util";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-
 import { DatePicker } from "@/components/ui/datepicker";
 import { format, getYear } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import clsx from "clsx";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { getNumberCopy } from "@/app/libs/data";
 
 const formSchema = z.object({
   title: z
@@ -162,14 +160,15 @@ export default function TaskOptions({
 
   const handleDuplicate = async () => {
     try {
+      const copyCount = await getNumberCopy(todo.title);
+      const baseTitle = getBaseTitle(todo.title);
       const todoCopy = new FormData();
-      todoCopy.append("title", todo.title + " (copy)");
+      todoCopy.append("title", `${baseTitle} (${copyCount})`);
       todoCopy.append("description", todo.description ? todo.description : "");
       todoCopy.append(
         "deadline",
-        todo.deadline ? format(todo.deadline, "yyyy-MM-dd") : ""
+        todo.deadline ? parseDate(todo.deadline) : ""
       );
-      console.log(todo);
 
       const res = await addTodo(todoCopy);
       if (res?.error) {

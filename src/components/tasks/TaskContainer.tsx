@@ -56,7 +56,7 @@ export default function TaskContainer({
         ))}
         <div className="fixed bottom-4 right-4">
           <Link href="/add">
-            <CirclePlus className="md:size-12  size-9" />
+            <CirclePlus className="md:size-10  size-9" />
           </Link>
         </div>
       </section>

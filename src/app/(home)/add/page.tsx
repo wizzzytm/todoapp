@@ -100,7 +100,7 @@ export default function Page() {
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] justify-items-center min-h-screen pb-10 gap-8 pt-8 font-[family-name:var(--font-geist-sans)]">
-      <span className="text-2xl font-bold">Siema</span>
+      <span className="text-2xl font-bold">Add a new todo</span>
       <section>
         <Card className="flex md:flex-row w-full flex-col overflow-hidden my-2 p-4">
           <Form {...form}>

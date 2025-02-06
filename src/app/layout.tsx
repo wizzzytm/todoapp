@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/ui/modetoggle";
 import { Toaster } from "@/components/ui/toaster";
 import type { Viewport } from "next";
+import { BurgerMenu } from "@/components/burger-menu";
 
 export const viewport: Viewport = {
   initialScale: 1,
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <BurgerMenu />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

@@ -25,19 +25,17 @@ export async function signup(formData: FormData) {
   const fullName = formData.get("name") as string;
   const [first_name, ...lastNameParts] = fullName.split(" ");
   const last_name = lastNameParts.length > 0 ? lastNameParts.join(" ") : null;
-  const data = {
-    first_name: first_name,
-    last_name: last_name,
+  const dataSignup = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
   };
-  const { error } = await supabase.auth.signUp(data);
+  const { error } = await supabase.auth.signUp({
+    ...dataSignup,
+    options: { data: { first_name, last_name } },
+  });
   if (error) {
     return { error: error.message };
   }
-  await supabase
-    .from("profiles")
-    .insert({ first_name: first_name, last_name: last_name });
 
   revalidatePath("/", "layout");
   return { success: true };

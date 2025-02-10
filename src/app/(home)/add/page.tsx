@@ -241,7 +241,7 @@ export default function Page() {
       </section>
       <div className="fixed bottom-4 right-4">
         <Link href="/">
-          <HomeIcon className="md:size-12  size-8" />
+          <HomeIcon className="md:size-10  size-9" />
         </Link>
       </div>
     </div>

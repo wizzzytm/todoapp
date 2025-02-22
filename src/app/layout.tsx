@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ModeToggle } from "@/components/ui/modetoggle";
 import { Toaster } from "@/components/ui/toaster";
 import type { Viewport } from "next";
 import { BurgerMenu } from "@/components/burger-menu";

@@ -1,6 +1,7 @@
 "use server";
 import { createClient } from "@/app/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function getName() {
   const supabase = await createClient();
@@ -15,8 +16,9 @@ export async function getName() {
         ? `${data[0].first_name} ${data[0].last_name}`
         : data[0].first_name;
     }
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    redirect("/error");
   }
 }
 
@@ -39,7 +41,8 @@ export async function changeName(formData: FormData) {
     }
     revalidatePath("/");
     return { success: true };
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    redirect("/error");
   }
 }

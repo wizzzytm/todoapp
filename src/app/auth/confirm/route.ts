@@ -20,7 +20,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       console.error("Token verification error:", error.message);
       return NextResponse.redirect(
         "/error?message=" + encodeURIComponent(error.message)
-      ); //Converting spaces and characters in error message, so the url doesnt break
+      );
+      //Converting spaces and characters in error message, so the url doesnt break
     }
 
     const redirectUrl = new URL(next, request.url);

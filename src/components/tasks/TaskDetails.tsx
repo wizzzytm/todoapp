@@ -1,12 +1,10 @@
-import Link from "next/link";
 import { TodoProps } from "./Task";
-import { Check, HomeIcon, X, XIcon } from "lucide-react";
+import { Check, X } from "lucide-react";
 import {
   Card,
   CardHeader,
   CardContent,
   CardDescription,
-  CardFooter,
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "../ui/separator";

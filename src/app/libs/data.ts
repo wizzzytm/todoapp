@@ -3,6 +3,7 @@ import { createClient } from "@/app/utils/supabase/server";
 import { TodoProps } from "@/components/tasks/Task";
 import { revalidatePath } from "next/cache";
 import { getBaseTitle } from "../utils/util";
+import { redirect } from "next/navigation";
 
 export async function getTodos() {
   const supabase = await createClient();
@@ -10,16 +11,15 @@ export async function getTodos() {
     const { data: todos, error: todosError } = await supabase
       .from("todos")
       .select()
-
       .order("created_at", { ascending: false });
 
     if (todosError)
       throw new Error("Error fetching todos: " + todosError.message);
 
     return todos || [];
-  } catch (error) {
-    console.error(error);
-    return [];
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    redirect("/error");
   }
 }
 
@@ -34,9 +34,9 @@ export async function getTodoById(todoId: string) {
       throw new Error("Error fetching todo: " + todoError.message);
     }
     return todo[0];
-  } catch (error) {
-    console.error(error);
-    return null;
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    redirect("/error");
   }
 }
 
@@ -68,8 +68,9 @@ export async function updateTodo(todo: TodoProps, action: string) {
     }
     revalidatePath("/");
     return { success: true };
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    redirect("/error");
   }
 }
 
@@ -82,8 +83,9 @@ export async function deleteTodo(todoId: string) {
     }
     revalidatePath("/");
     return { success: true };
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    redirect("/error");
   }
 }
 
@@ -109,8 +111,9 @@ export async function addTodo(formData: FormData) {
     }
     revalidatePath("/");
     return { success: true, data };
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    redirect("/error");
   }
 }
 
@@ -129,8 +132,9 @@ export async function markAllAsDone() {
     }
     revalidatePath("/");
     return { success: true };
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    redirect("/error");
   }
 }
 
@@ -162,8 +166,9 @@ export async function deleteMultiple(checked: boolean) {
       revalidatePath("/");
       return { success: true };
     }
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    redirect("/error");
   }
 }
 
@@ -179,8 +184,8 @@ export const getNumberCopy = async (title: string) => {
       throw new Error("Error fetching todos: " + error.message);
     }
     return count ? count + 1 : 1;
-  } catch (error) {
-    console.error(error);
-    return 1;
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    redirect("/error");
   }
 };

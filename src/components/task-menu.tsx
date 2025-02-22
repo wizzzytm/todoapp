@@ -1,13 +1,6 @@
 "use client";
 import * as React from "react";
-import {
-  ClipboardCheck,
-  FileCog,
-  LogOut,
-  PlusCircle,
-  Settings,
-  Trash2,
-} from "lucide-react";
+import { ClipboardCheck, FileCog, PlusCircle, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -30,7 +23,6 @@ import {
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
-import { boolean } from "zod";
 
 export function TaskMenu({
   onAllDone,

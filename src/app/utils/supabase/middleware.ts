@@ -40,25 +40,6 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // if (request.nextUrl.pathname === "/auth/reset") {
-  //   const token_hash = request.nextUrl.searchParams.get("token_hash");
-  //   if (!token_hash) {
-  //     const url = request.nextUrl.clone();
-  //     url.pathname = "/404";
-  //     return NextResponse.redirect(url);
-  //   }
-  //   const { data, error } = await supabase.auth.verifyOtp({
-  //     type: "recovery",
-  //     token_hash,
-  //   });
-  //   if (error || !data) {
-  //     console.error("Invalid token in middleware:", error?.message);
-  //     const url = request.nextUrl.clone();
-  //     url.pathname = "/404";
-  //     return NextResponse.redirect(url);
-  //   }
-  // }
-
   if (user && isAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/";

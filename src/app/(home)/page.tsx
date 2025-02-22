@@ -3,7 +3,6 @@ import { getTodos } from "@/app/libs/data";
 import { formatTodo } from "../utils/util";
 import TaskContainer from "@/components/tasks/TaskContainer";
 import { getName } from "@/app/libs/user";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default async function Home() {
   const todosRaw = await getTodos();

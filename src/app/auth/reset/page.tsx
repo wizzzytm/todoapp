@@ -18,5 +18,9 @@ export default function Page() {
 
   verifyToken();
 
-  return <ResetPasswordPreview />;
+  return (
+    <div className="mt-6">
+      <ResetPasswordPreview />
+    </div>
+  );
 }

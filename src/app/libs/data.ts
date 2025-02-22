@@ -114,6 +114,59 @@ export async function addTodo(formData: FormData) {
   }
 }
 
+export async function markAllAsDone() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  try {
+    const { error } = await supabase
+      .from("todos")
+      .update({ completed: true })
+      .eq("user_id", user?.id);
+    if (error) {
+      return { error: error.message };
+    }
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deleteMultiple(checked: boolean) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  try {
+    if (checked) {
+      const { error } = await supabase
+        .from("todos")
+        .delete()
+        .eq("user_id", user?.id);
+      if (error) {
+        return { error: error.message };
+      }
+      revalidatePath("/");
+      return { success: true };
+    } else {
+      const { error } = await supabase
+        .from("todos")
+        .delete()
+        .eq("user_id", user?.id)
+        .eq("completed", true);
+      if (error) {
+        return { error: error.message };
+      }
+      revalidatePath("/");
+      return { success: true };
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export const getNumberCopy = async (title: string) => {
   try {
     const supabase = await createClient();

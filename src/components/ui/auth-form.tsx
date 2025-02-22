@@ -26,6 +26,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useToast } from "@/hooks/use-toast";
+import { changeName, getName } from "@/app/libs/user";
 
 // Improved schema with additional validation rules
 const formSchemaLogin = z.object({
@@ -556,6 +557,84 @@ export function ResetPasswordPreview() {
           </Form>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+const formSchemaChangeName = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, { message: "Name must be at least 2 characters long" }),
+});
+
+export function ChangeNamePreview({ defaultName }: { defaultName: string }) {
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof formSchemaChangeName>>({
+    resolver: zodResolver(formSchemaChangeName),
+    defaultValues: {
+      name: defaultName,
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchemaChangeName>) {
+    try {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      const res = await changeName(formData);
+
+      if (res?.error) {
+        toast({
+          variant: "destructive",
+          title: "Something went wrong!",
+          description: res.error,
+          duration: 3000,
+        });
+      } else if (res?.success) {
+        toast({
+          title: "Name changed successfully",
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: "Please try again later.",
+        duration: 3000,
+      });
+    }
+  }
+
+  return (
+    <div className="flex items-start justify-start flex-col">
+      <CardHeader>
+        <CardTitle className="text-xl">Change your name</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="grid gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="grid gap-2">
+                    <FormLabel htmlFor="name">Full Name</FormLabel>
+                    <FormControl>
+                      <Input id="name" placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full">
+                Change name
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
     </div>
   );
 }

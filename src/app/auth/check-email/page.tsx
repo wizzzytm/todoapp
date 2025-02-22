@@ -8,7 +8,7 @@ export default function Page() {
   useEffect(() => {
     const timer = setTimeout(() => {
       router.push("/login");
-    }, 3000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, [router]);
@@ -22,7 +22,7 @@ export default function Page() {
           complete your registration
         </p>
         <p className="mt-4 text-sm text-gray-500">
-          Redirecting you to the login page in 3 seconds...
+          Redirecting you to the login page in 5 seconds...
         </p>
       </div>
     </div>

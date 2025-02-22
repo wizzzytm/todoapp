@@ -4,6 +4,7 @@ import Task, { TodoProps } from "./Task";
 import Link from "next/link";
 import { CirclePlus } from "lucide-react";
 import { ModeToggle } from "../ui/modetoggle";
+import { TaskMenu } from "../task-menu";
 
 export default function TaskContainer({
   initialTodos,
@@ -42,22 +43,50 @@ export default function TaskContainer({
     );
   };
 
+  const handleAllDone = () => {
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) => ({ ...todo, completed: true }))
+    );
+  };
+  const handleDelete = (checked: boolean) => {
+    if (checked) {
+      setTodos([]);
+    } else {
+      setTodos((prevTodos) =>
+        prevTodos.filter((todo) => todo.completed == false)
+      );
+    }
+  };
+
   return (
     <>
       <section className="md:w-7/12 w-full p-2">
-        {todos.map((todo) => (
-          <Task
-            onComplete={handleComplete}
-            onAddDelete={handleAddDelete}
-            onEdit={handleEdit}
-            key={todo.id}
-            todo={todo}
-          />
-        ))}
+        {todos.length == 0 ? (
+          <div className="w-full h-full flex flex-col justify-center items-center">
+            <span className="text-2xl text-center">
+              You don't have any tasks yet
+            </span>
+            <span className="text-center text-sm">
+              Click{" "}
+              <Link href="/add" className="underline italic">
+                here
+              </Link>{" "}
+              or go to Task menu (right bottom corner) to add one.
+            </span>
+          </div>
+        ) : (
+          todos.map((todo) => (
+            <Task
+              onComplete={handleComplete}
+              onAddDelete={handleAddDelete}
+              onEdit={handleEdit}
+              key={todo.id}
+              todo={todo}
+            />
+          ))
+        )}
         <div className="fixed bottom-4 right-4">
-          <Link href="/add">
-            <CirclePlus className="md:size-10  size-9" />
-          </Link>
+          <TaskMenu onAllDone={handleAllDone} onDelete={handleDelete} />
         </div>
       </section>
     </>

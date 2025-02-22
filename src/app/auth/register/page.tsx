@@ -1,5 +1,9 @@
-import { LoginPreview, RegisterPreview } from "@/components/ui/auth-form";
+import { RegisterPreview } from "@/components/ui/auth-form";
 
 export default function Page() {
-  return <RegisterPreview />;
+  return (
+    <div className="mt-6">
+      <RegisterPreview />
+    </div>
+  );
 }

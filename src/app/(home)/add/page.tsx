@@ -239,7 +239,7 @@ export default function Page() {
           </Form>
         </Card>
       </section>
-      <div className="fixed bottom-4 right-4">
+      <div className="fixed bottom-4  md:bg-transparent md:hover:bg-accent p-2 bg-accent right-4 rounded-full">
         <Link href="/">
           <HomeIcon className="md:size-10  size-9" />
         </Link>

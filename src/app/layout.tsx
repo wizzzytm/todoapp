@@ -4,7 +4,6 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import type { Viewport } from "next";
-import { BurgerMenu } from "@/components/burger-menu";
 
 export const viewport: Viewport = {
   initialScale: 1,

@@ -23,6 +23,7 @@ function ResetPageContent() {
           router.replace("/error?message=Invalid token");
         }
       } catch (err) {
+        console.log(err);
         router.replace("/error?message=Verification failed");
       }
     };

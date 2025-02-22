@@ -18,7 +18,7 @@ function ResetPasswordForm() {
       }
 
       try {
-        const response = await fetch(`/api/verify-token?token_hash=${token}`);
+        const response = await fetch(`/auth/verify-token?token_hash=${token}`);
         if (!response.ok) {
           setIsValid(false);
         } else {

@@ -27,7 +27,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     revalidatePath("/", "layout");
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+    return NextResponse.redirect(new URL("/auth/login", req.url), {
+      status: 303,
+    });
   } catch (err) {
     console.error("Unexpected error during sign out:", err);
     return NextResponse.json({ error: "Unexpected error" }, { status: 500 });

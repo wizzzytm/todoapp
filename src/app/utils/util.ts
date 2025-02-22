@@ -31,7 +31,3 @@ export const parseDate = (dateString: string): string => {
   const [day, month, year] = dateString.split("/");
   return `${year}-${month}-${day}`;
 };
-
-export type ActionResponse<T = any> =
-  | { success: true; data?: T }
-  | { success: false; error: string };

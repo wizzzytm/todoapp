@@ -1,5 +1,4 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { HomeIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function Loading() {

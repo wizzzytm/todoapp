@@ -70,8 +70,8 @@ export default function TaskContainer({
     );
   });
 
-  var completedTodos = todos.filter((todo) => todo.completed);
-  var percentage = Math.round((completedTodos.length / todos.length) * 100);
+  const completedTodos = todos.filter((todo) => todo.completed);
+  const percentage = Math.round((completedTodos.length / todos.length) * 100);
 
   return (
     <section className="md:w-7/12 w-full p-2">
@@ -125,7 +125,7 @@ export default function TaskContainer({
       ) : (
         <div className="w-full h-full flex flex-col justify-center items-center">
           <span className="text-2xl text-center">
-            You don't have any tasks yet.
+            You don&apos;t have any tasks yet.
           </span>
           <span className="text-center text-sm">
             Click{" "}

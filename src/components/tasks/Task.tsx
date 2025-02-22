@@ -1,20 +1,7 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
-import {
-  AlarmClock,
-  AlarmClockCheck,
-  AlarmClockOff,
-  RedoDot,
-} from "lucide-react";
+import { AlarmClock, AlarmClockCheck, AlarmClockOff } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
 import { Checkbox } from "../ui/checkbox";
 import TaskOptions from "./TaskOptions";

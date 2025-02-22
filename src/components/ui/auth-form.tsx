@@ -26,9 +26,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useToast } from "@/hooks/use-toast";
-import { changeName, getName } from "@/app/libs/user";
+import { changeName } from "@/app/libs/user";
 
-// Improved schema with additional validation rules
 const formSchemaLogin = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z
@@ -72,7 +71,7 @@ export function LoginPreview() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Something went wrong",
+        title: "Something went wrong " + error,
         description: "Please try again later.",
         duration: 3000,
       });
@@ -218,10 +217,9 @@ export function RegisterPreview() {
         router.push("/auth/check-email");
       }
     } catch (error) {
-      console.error("Signup error:", error);
       toast({
         variant: "destructive",
-        title: "Something went wrong",
+        title: "Something went wrong " + error,
         description: "Please try again later.",
         duration: 3000,
       });
@@ -370,7 +368,7 @@ export function ForgetPasswordPreview() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Something went wrong",
+        title: "Something went wrong " + error,
         description: "Please try again later.",
         duration: 3000,
       });
@@ -487,7 +485,7 @@ export function ResetPasswordPreview() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Something went wrong",
+        title: "Something went wrong " + error,
         description: "Please try again later.",
         duration: 3000,
       });
@@ -599,7 +597,7 @@ export function ChangeNamePreview({ defaultName }: { defaultName: string }) {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Something went wrong",
+        title: "Something went wrong " + error,
         description: "Please try again later.",
         duration: 3000,
       });

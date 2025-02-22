@@ -8,8 +8,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next") ?? "/";
 
+  const createErrorUrl = (message: string) => {
+    const errorUrl = new URL("/error", request.url);
+    errorUrl.searchParams.set("message", message);
+    return errorUrl.toString();
+  };
+
   if (!token_hash || !type) {
-    return NextResponse.redirect("/error?message=Invalid token or type");
+    return NextResponse.redirect(createErrorUrl("Invalid token or type"));
   }
 
   try {
@@ -18,17 +24,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     if (error) {
       console.error("Token verification error:", error.message);
-      return NextResponse.redirect(
-        "/error?message=" + encodeURIComponent(error.message)
-      );
-      //Converting spaces and characters in error message, so the url doesnt break
+      return NextResponse.redirect(createErrorUrl(error.message));
     }
 
     const redirectUrl = new URL(next, request.url);
-
     return NextResponse.redirect(redirectUrl.toString());
   } catch (err) {
     console.error("Unexpected error during token verification:", err);
-    return NextResponse.redirect("/error?message=Unexpected+error");
+    return NextResponse.redirect(createErrorUrl("Unexpected error"));
   }
 }

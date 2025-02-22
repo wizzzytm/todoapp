@@ -1,45 +1,36 @@
 "use client";
-
 import { ResetPasswordPreview } from "@/components/ui/auth-form";
-import { notFound, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-function ResetPasswordForm() {
+// Wrap the component in Suspense to handle client-side searchParams
+function ResetPageContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token_hash");
-
-  const [isValid, setIsValid] = useState<boolean | null>(null);
 
   useEffect(() => {
     const verifyToken = async () => {
       if (!token) {
-        notFound();
+        router.replace("/error?message=Missing token");
         return;
       }
 
       try {
         const response = await fetch(`/auth/verify-token?token_hash=${token}`);
         if (!response.ok) {
-          setIsValid(false);
-        } else {
-          setIsValid(true);
+          router.replace("/error?message=Invalid token");
         }
-      } catch (error) {
-        console.error("Failed to verify token:", error);
-        setIsValid(false);
+      } catch (err) {
+        router.replace("/error?message=Verification failed");
       }
     };
 
     verifyToken();
-  }, [token]);
+  }, [token, router]);
 
-  if (isValid === null) {
-    return <p>Loading...</p>;
-  }
-
-  if (!isValid) {
-    notFound();
-  }
+  if (!token) return null;
 
   return (
     <div className="mt-6">
@@ -48,10 +39,11 @@ function ResetPasswordForm() {
   );
 }
 
-export default function Page() {
+// Main page component with Suspense boundary
+export default function ResetPage() {
   return (
-    <Suspense fallback={<p>Loading reset form...</p>}>
-      <ResetPasswordForm />
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPageContent />
     </Suspense>
   );
 }

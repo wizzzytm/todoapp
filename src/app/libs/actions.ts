@@ -46,7 +46,7 @@ export async function forgot(formData: FormData) {
   const email = formData.get("email") as string;
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: "http://todoapp-kolek.vercel.app/auth/reset",
+    redirectTo: "https://todoapp-kolek.vercel.app/auth/reset",
   });
 
   if (error) {

@@ -28,6 +28,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     const redirectUrl = new URL(next, request.url);
+    redirectUrl.searchParams.set("token_hash", token_hash);
     return NextResponse.redirect(redirectUrl.toString());
   } catch (err) {
     console.error("Unexpected error during token verification:", err);

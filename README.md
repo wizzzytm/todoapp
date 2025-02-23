@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TodoApp
 
-## Getting Started
+ ## About
+ TodoApp is a modern to-do list application built with Next.js, designed to help you manage your tasks efficiently. With a user-friendly interface and robust features, TodoApp allows you to stay organized and       productive.
+ ## Features
+<ul>
+  <li><b>Task Management:</b> Add, edit, and delete tasks with ease.</li>
+  <li><b>User Authentication:</b> Secure login and registration to keep your tasks private.</li>
+  <li><b>Responsive Design:</b> Optimized for both desktop and mobile devices.</li>
+  <li><b>Persistent Storage:</b> Tasks are saved in a database, ensuring they persist across sessions.</li>
+  <li><b>Dark Mode:</b> Switch between light and dark themes for a comfortable viewing experience.</li>
+</ul>
 
-First, run the development server:
+  ## Techstack
+  <div style="display: flex; flex-direction: row; gap: 8px;">
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+  | ![Next.js](https://cdn.simpleicons.org/nextdotjs/18181B/ffffff) | ![Supabase](https://cdn.simpleicons.org/supabase/18181B/ffffff) | ![Typescript](https://cdn.simpleicons.org/typescript/18181B/ffffff) | ![Shadcn](https://cdn.simpleicons.org/shadcnui/18181B/ffffff)  | ![Tailwind](https://cdn.simpleicons.org/tailwindcss/18181B/ffffff) | ![Zod](https://cdn.simpleicons.org/zod/18181B/ffffff) | ![Lucide](https://cdn.simpleicons.org/lucide/18181B/ffffff) | 
+  |---|---|---|---|---|---|---|
+  | Next.js | Supabase | Typescript | Shadcn | Tailwind | Zod | Lucide |
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+  </div>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+  ## Contributing
+Contributions are welcome! If you find any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request on the <a href="https://github.com/wizzzytm/todoapp">Github repository</a>
+   
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+  
